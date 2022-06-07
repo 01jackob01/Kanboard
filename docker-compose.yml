@@ -1,0 +1,36 @@
+version: '2'
+services:
+  kanboard:
+    container_name: kanboard
+    image: kanboard/kanboard:latest
+    restart: always
+    ports:
+      - "8085:8085"
+    expose:
+      - "8085"
+    volumes:
+      - kanboard_data:/var/www/app/data
+      - kanboard_plugins:/var/www/app/plugins
+      - kanboard_ssl:/etc/nginx/ssl
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
+    environment:
+      DATABASE_URL: mysql://root:secret@db:3307/kanboard
+  db:
+    container_name: kanboard_db
+    image: mariadb:latest
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - "3307:3307"
+    expose:
+      - "3307"
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: kanboard
+      MYSQL_USER: kanboard
+      MYSQL_PASSWORD: kanboard-secret
+      MYSQL_TCP_PORT: 3307
+volumes:
+  kanboard_data:
+  kanboard_plugins:
+  kanboard_ssl:
